@@ -21,9 +21,9 @@ public class RegisterService {
     }
 
     @Transactional
-    public void chargeRegister(UUID uuid, Double chargeValue) {
+    public Register chargeRegister(UUID uuid, Double chargeAmount) {
         Register register = registerDao.getOne(uuid);
-        register.setBalance(register.getBalance() + chargeValue);
-        registerDao.save(register);
+        register.setBalance(register.getBalance() + chargeAmount);
+        return registerDao.save(register);
     }
 }
