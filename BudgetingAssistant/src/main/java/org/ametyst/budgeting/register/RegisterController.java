@@ -18,7 +18,7 @@ public class RegisterController {
         this.registerService = registerService;
     }
 
-    @GetMapping("/")
+    @GetMapping
     public List<Register> getAllRegisters() {
         return registerService.getAllRegisters();
     }

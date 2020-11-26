@@ -6,8 +6,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class BudgetingAssistantApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(BudgetingAssistantApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(BudgetingAssistantApplication.class, args);
+    }
 
 }
