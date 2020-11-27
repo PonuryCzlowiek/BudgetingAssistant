@@ -1,6 +1,7 @@
 package org.ametyst.budgeting.register;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,8 +23,26 @@ public class RegisterService {
 
     @Transactional
     public Register chargeRegister(UUID uuid, Double chargeAmount) {
-        Register register = registerDao.getOne(uuid);
-        register.setBalance(register.getBalance() + chargeAmount);
-        return registerDao.save(register);
+        Optional<Register> optionalRegisterToCharge = registerDao.findById(uuid);
+        if (optionalRegisterToCharge.isPresent()) {
+            Register register = optionalRegisterToCharge.get();
+            register.setBalance(register.getBalance() + chargeAmount);
+            return register;
+        }
+        return null;
+    }
+
+    @Transactional
+    public Register transfer(UUID uuid, UUID targetRegisterUUID, Double amount) {
+        Optional<Register> optionalSource = registerDao.findById(uuid);
+        Optional<Register> optionalTarget = registerDao.findById(targetRegisterUUID);
+        if (optionalSource.isPresent() && optionalTarget.isPresent()) {
+            Register source = optionalSource.get();
+            Register target = optionalTarget.get();
+            source.setBalance(source.getBalance() - amount);
+            target.setBalance(target.getBalance() + amount);
+            return source;
+        }
+        return null;
     }
 }
