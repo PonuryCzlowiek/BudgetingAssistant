@@ -19,16 +19,14 @@ class RegisterServiceTest extends SpringBootTestWithData {
         List<Register> allRegisters = registerService.getAllRegisters();
 
         // assert
-        assertEquals(5, allRegisters.size());
+        assertEquals(DEFAULT_REGISTER_AMOUNT + TEST_REGISTER_AMOUNT, allRegisters.size());
     }
 
     @Transactional
     @Test
     void shouldChargeSelectedRegister() {
-        // arrange
-
         // act
-        Register register = registerService.chargeRegister(TEST_REGISTER_UUID, 100.0);
+        Register register = registerService.chargeRegister(TEST_REGISTER_UUID_2, 100.0);
 
         // assert
         assertEquals(200.0, register.getBalance());

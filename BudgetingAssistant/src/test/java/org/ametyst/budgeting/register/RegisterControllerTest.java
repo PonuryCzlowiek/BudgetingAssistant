@@ -9,6 +9,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 class RegisterControllerTest extends SpringBootTestWithData {
 
@@ -41,5 +43,19 @@ class RegisterControllerTest extends SpringBootTestWithData {
         // assert
         assertEquals(150, register.getBalance());
         assertEquals(TEST_REGISTER_UUID, register.getUuid());
+    }
+
+    @Test
+    void shouldNotChargeRegisterWithNegativeAmount() {
+        // arrange
+        RegisterChargeDto request = new RegisterChargeDto();
+        request.setAmount(-50.0);
+
+        // act
+        ResponseEntity<String> responseEntity = this.restTemplate
+            .postForEntity("http://localhost:" + port + "/registers/" + TEST_REGISTER_UUID + "/charge", request, String.class);
+
+        // assert
+        assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
     }
 }
