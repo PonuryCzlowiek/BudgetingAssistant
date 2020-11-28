@@ -46,13 +46,13 @@ class RegisterControllerTest {
     @Test
     void shouldChargeRegisterWithGivenAmount() {
         // arrange
-        RegisterChargeDto request = new RegisterChargeDto();
+        RegisterRechargeDto request = new RegisterRechargeDto();
         request.setAmount(50.0);
-        when(registerDao.findById(TEST_REGISTER_UUID)).thenReturn(Optional.of(getRegister(TEST_REGISTER_UUID, "Charge", 100.0)));
+        when(registerDao.findById(TEST_REGISTER_UUID)).thenReturn(Optional.of(getRegister(TEST_REGISTER_UUID, "Recharge", 100.0)));
 
         // act
         Register register = this.restTemplate
-            .postForObject("http://localhost:" + port + "/registers/" + TEST_REGISTER_UUID + "/charge", request, Register.class);
+            .postForObject("http://localhost:" + port + "/registers/" + TEST_REGISTER_UUID + "/recharge", request, Register.class);
 
         // assert
         assertEquals(150.0, register.getBalance());
@@ -60,14 +60,14 @@ class RegisterControllerTest {
     }
 
     @Test
-    void shouldNotChargeRegisterWithNegativeAmount() {
+    void shouldNotRechargeRegisterWithNegativeAmount() {
         // arrange
-        RegisterChargeDto request = new RegisterChargeDto();
+        RegisterRechargeDto request = new RegisterRechargeDto();
         request.setAmount(-50.0);
 
         // act
         ResponseEntity<String> responseEntity = this.restTemplate
-            .postForEntity("http://localhost:" + port + "/registers/" + TEST_REGISTER_UUID + "/charge", request, String.class);
+            .postForEntity("http://localhost:" + port + "/registers/" + TEST_REGISTER_UUID + "/recharge", request, String.class);
 
         // assert
         assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());

@@ -38,12 +38,12 @@ class RegisterServiceTest {
     }
 
     @Test
-    void shouldChargeSelectedRegister() {
+    void shouldRechargeSelectedRegister() {
         // arrange
         when(registerDao.findById(TEST_REGISTER_UUID_2)).thenReturn(Optional.of(getRegister(TEST_REGISTER_UUID_2, "Register", 100.0)));
 
         // act
-        Register register = registerService.chargeRegister(TEST_REGISTER_UUID_2, 100.0);
+        Register register = registerService.rechargeRegister(TEST_REGISTER_UUID_2, 100.0);
 
         // assert
         assertEquals(200.0, register.getBalance());

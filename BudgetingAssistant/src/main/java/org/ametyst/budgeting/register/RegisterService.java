@@ -22,13 +22,13 @@ public class RegisterService {
     }
 
     @Transactional
-    public Register chargeRegister(UUID uuid, Double chargeAmount) {
-        Optional<Register> optionalRegisterToCharge = registerDao.findById(uuid);
-        if (optionalRegisterToCharge.isEmpty()) {
+    public Register rechargeRegister(UUID uuid, Double rechargeAmount) {
+        Optional<Register> optionalRegisterToRecharge = registerDao.findById(uuid);
+        if (optionalRegisterToRecharge.isEmpty()) {
             throw new IllegalArgumentException("Target register does not exist.");
         }
-        Register register = optionalRegisterToCharge.get();
-        register.setBalance(register.getBalance() + chargeAmount);
+        Register register = optionalRegisterToRecharge.get();
+        register.setBalance(register.getBalance() + rechargeAmount);
         return register;
     }
 

@@ -26,9 +26,9 @@ public class RegisterController {
         return registerService.getAllRegisters();
     }
 
-    @PostMapping("{uuid}/charge")
-    public ResponseEntity<Register> chargeRegister(@PathVariable("uuid") UUID uuid, @RequestBody @Valid RegisterChargeDto registerChargeDto) {
-        return ResponseEntity.ok(registerService.chargeRegister(uuid, registerChargeDto.getAmount()));
+    @PostMapping("{uuid}/recharge")
+    public ResponseEntity<Register> rechargeRegister(@PathVariable("uuid") UUID uuid, @RequestBody @Valid RegisterRechargeDto registerRechargeDto) {
+        return ResponseEntity.ok(registerService.rechargeRegister(uuid, registerRechargeDto.getAmount()));
     }
 
     @PostMapping("{uuid}/transfer")
