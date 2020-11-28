@@ -1,9 +1,11 @@
 package org.ametyst.budgeting.register;
 
 import java.util.UUID;
+import javax.validation.constraints.Min;
 
 public class RegisterTransferDto {
     private UUID targetRegisterUUID;
+    @Min(value = 0, message = "Cannot transfer negative amount")
     private Double amount;
 
     public UUID getTargetRegisterUUID() {

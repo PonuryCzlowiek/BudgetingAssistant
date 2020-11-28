@@ -79,8 +79,9 @@ class RegisterControllerTest {
         RegisterTransferDto registerTransferDto = new RegisterTransferDto();
         registerTransferDto.setAmount(300.0);
         registerTransferDto.setTargetRegisterUUID(TEST_REGISTER_UUID_2);
+        Register fromRegister = getRegister(TEST_REGISTER_UUID, "From", 300.0);
         Register toRegister = getRegister(TEST_REGISTER_UUID_2, "To", 100.0);
-        when(registerDao.findById(TEST_REGISTER_UUID)).thenReturn(Optional.of(getRegister(TEST_REGISTER_UUID, "From", 300.0)));
+        when(registerDao.findById(TEST_REGISTER_UUID)).thenReturn(Optional.of(fromRegister));
         when(registerDao.findById(TEST_REGISTER_UUID_2)).thenReturn(Optional.of(toRegister));
 
         // act
@@ -91,6 +92,61 @@ class RegisterControllerTest {
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals(0.0, responseEntity.getBody().getBalance());
         assertEquals(400.0, toRegister.getBalance());
+    }
+
+    @Test
+    void shouldNotAllowToTransferNegativeAmountOfMoney() {
+        // arrange
+        RegisterTransferDto registerTransferDto = new RegisterTransferDto();
+        registerTransferDto.setAmount(-5.0);
+        registerTransferDto.setTargetRegisterUUID(TEST_REGISTER_UUID_2);
+        Register fromRegister = getRegister(TEST_REGISTER_UUID, "From", 300.0);
+        Register toRegister = getRegister(TEST_REGISTER_UUID_2, "To", 100.0);
+        when(registerDao.findById(TEST_REGISTER_UUID)).thenReturn(Optional.of(fromRegister));
+        when(registerDao.findById(TEST_REGISTER_UUID_2)).thenReturn(Optional.of(toRegister));
+
+        // act
+        ResponseEntity<Register> responseEntity = this.restTemplate
+            .postForEntity("http://localhost:" + port + "/registers/" + TEST_REGISTER_UUID + "/transfer", registerTransferDto, Register.class);
+
+        // assert
+        assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
+    }
+
+    @Test
+    void shouldNotAllowToTransferFromNonexistentRegister() {
+        // arrange
+        RegisterTransferDto registerTransferDto = new RegisterTransferDto();
+        registerTransferDto.setAmount(15.0);
+        registerTransferDto.setTargetRegisterUUID(TEST_REGISTER_UUID_2);
+        Register toRegister = getRegister(TEST_REGISTER_UUID_2, "To", 100.0);
+        when(registerDao.findById(TEST_REGISTER_UUID)).thenReturn(Optional.empty());
+        when(registerDao.findById(TEST_REGISTER_UUID_2)).thenReturn(Optional.of(toRegister));
+
+        // act
+        ResponseEntity<Register> responseEntity = this.restTemplate
+            .postForEntity("http://localhost:" + port + "/registers/" + TEST_REGISTER_UUID + "/transfer", registerTransferDto, Register.class);
+
+        // assert
+        assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
+    }
+
+    @Test
+    void shouldNotAllowToTransferToNonexistentRegister() {
+        // arrange
+        RegisterTransferDto registerTransferDto = new RegisterTransferDto();
+        registerTransferDto.setAmount(15.0);
+        registerTransferDto.setTargetRegisterUUID(TEST_REGISTER_UUID_2);
+        Register fromRegister = getRegister(TEST_REGISTER_UUID, "From", 300.0);
+        when(registerDao.findById(TEST_REGISTER_UUID)).thenReturn(Optional.of(fromRegister));
+        when(registerDao.findById(TEST_REGISTER_UUID_2)).thenReturn(Optional.empty());
+
+        // act
+        ResponseEntity<Register> responseEntity = this.restTemplate
+            .postForEntity("http://localhost:" + port + "/registers/" + TEST_REGISTER_UUID + "/transfer", registerTransferDto, Register.class);
+
+        // assert
+        assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
     }
 
     private Register getRegister(UUID registerUuid, String name, double balance) {

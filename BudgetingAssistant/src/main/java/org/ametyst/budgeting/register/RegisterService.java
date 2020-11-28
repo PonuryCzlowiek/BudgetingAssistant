@@ -24,25 +24,28 @@ public class RegisterService {
     @Transactional
     public Register chargeRegister(UUID uuid, Double chargeAmount) {
         Optional<Register> optionalRegisterToCharge = registerDao.findById(uuid);
-        if (optionalRegisterToCharge.isPresent()) {
-            Register register = optionalRegisterToCharge.get();
-            register.setBalance(register.getBalance() + chargeAmount);
-            return register;
+        if (optionalRegisterToCharge.isEmpty()) {
+            throw new IllegalArgumentException("Target register does not exist.");
         }
-        return null;
+        Register register = optionalRegisterToCharge.get();
+        register.setBalance(register.getBalance() + chargeAmount);
+        return register;
     }
 
     @Transactional
     public Register transfer(UUID uuid, UUID targetRegisterUUID, Double amount) {
         Optional<Register> optionalSource = registerDao.findById(uuid);
         Optional<Register> optionalTarget = registerDao.findById(targetRegisterUUID);
-        if (optionalSource.isPresent() && optionalTarget.isPresent()) {
-            Register source = optionalSource.get();
-            Register target = optionalTarget.get();
-            source.setBalance(source.getBalance() - amount);
-            target.setBalance(target.getBalance() + amount);
-            return source;
+        if (optionalSource.isEmpty()) {
+            throw new IllegalArgumentException("Source register does not exist.");
         }
-        return null;
+        if (optionalTarget.isEmpty()) {
+            throw new IllegalArgumentException("Target register does not exist.");
+        }
+        Register source = optionalSource.get();
+        Register target = optionalTarget.get();
+        source.setBalance(source.getBalance() - amount);
+        target.setBalance(target.getBalance() + amount);
+        return source;
     }
 }
