@@ -43,6 +43,9 @@ public class RegisterService {
             throw new IllegalArgumentException("Target register does not exist.");
         }
         Register source = optionalSource.get();
+        if (source.getBalance() < amount) {
+            throw new IllegalArgumentException("Not enough money to transfer.");
+        }
         Register target = optionalTarget.get();
         source.setBalance(source.getBalance() - amount);
         target.setBalance(target.getBalance() + amount);

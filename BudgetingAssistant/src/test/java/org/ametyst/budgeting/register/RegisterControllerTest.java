@@ -149,6 +149,25 @@ class RegisterControllerTest {
         assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
     }
 
+    @Test
+    void shouldNotAllowToTransferMoreThanCurrentBalance() {
+        // arrange
+        RegisterTransferDto registerTransferDto = new RegisterTransferDto();
+        registerTransferDto.setAmount(150.0);
+        registerTransferDto.setTargetRegisterUUID(TEST_REGISTER_UUID_2);
+        Register fromRegister = getRegister(TEST_REGISTER_UUID, "From", 140.0);
+        Register toRegister = getRegister(TEST_REGISTER_UUID_2, "To", 100.0);
+        when(registerDao.findById(TEST_REGISTER_UUID)).thenReturn(Optional.of(fromRegister));
+        when(registerDao.findById(TEST_REGISTER_UUID_2)).thenReturn(Optional.of(toRegister));
+
+        // act
+        ResponseEntity<Register> responseEntity = this.restTemplate
+            .postForEntity("http://localhost:" + port + "/registers/" + TEST_REGISTER_UUID + "/transfer", registerTransferDto, Register.class);
+
+        // assert
+        assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
+    }
+
     private Register getRegister(UUID registerUuid, String name, double balance) {
         Register fromRegister = new Register();
         fromRegister.setUuid(registerUuid);
